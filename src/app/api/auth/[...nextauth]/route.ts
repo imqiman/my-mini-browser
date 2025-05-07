@@ -44,15 +44,12 @@ const handler = NextAuth({
           profilePictureUrl: ''
         } as any;
       }
-
       if (token && typeof token.sub === 'string') {
         session.user.id = token.sub;
       }
-
       if ('walletAddress' in token) {
         (session.user as any).walletAddress = (token as any).walletAddress;
       }
-
       return session;
     },
     async jwt({ token, user }) {
