@@ -33,15 +33,30 @@ const handler = NextAuth({
   pages: { signIn: '/login' },
   callbacks: {
     async session({ session, token }) {
-      const sess: any = session;
-      if (token && (token as any).walletAddress) {
-        sess.user.id = token.sub;
-        sess.user.walletAddress = (token as any).walletAddress;
+      if (!session.user) {
+        session.user = {
+          id: '',
+          name: '',
+          email: '',
+          emailVerified: null,
+          walletAddress: '',
+          username: '',
+          profilePictureUrl: ''
+        } as any;
       }
-      return sess;
+
+      if (token && typeof token.sub === 'string') {
+        session.user.id = token.sub;
+      }
+
+      if ('walletAddress' in token) {
+        (session.user as any).walletAddress = (token as any).walletAddress;
+      }
+
+      return session;
     },
     async jwt({ token, user }) {
-      if (user && (user as any).walletAddress) {
+      if (user && 'walletAddress' in user) {
         (token as any).walletAddress = (user as any).walletAddress;
       }
       return token;
